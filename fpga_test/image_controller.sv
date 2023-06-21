@@ -16,7 +16,10 @@ module top
   input  logic txready, rxready
 );
 
-  iamge_controller u2 (.clk(hwclk), .nrst(~pb[19]), .enable(pb[2]), .clear(pb[17]), .right(right[3:0]), .left(left[3:0]), .at_end(red));
+  logic [15:0]data_in; //TO BE REPLACED WITH SPI IN 
+  logic [15:0]data_out; //TO BE REPLACED WITH SPI OUT
+
+  iamge_controller u2 (.clk(hwclk), .nrst(~pb[19]), .enable(pb[2]), .clear(pb[17]), .data_in(data_in), .right(right[3:0]), .left(left[3:0]), .at_end(red), .data_out(data_out));
 
 
 endmodule
@@ -30,11 +33,12 @@ module iamge_controller (
   input logic nrst,
   input logic enable,
   input logic clear,
+  input logic [15:0]data_in,
   output logic [3:0]left,
   output logic [3:0]right,
-  output logic at_end
+  output logic at_end,
+  output logic [15:0]data_out
 );
-
 
   logic [3:0]max = 4'b1111;
   logic horizontal_strobe, vertical_strobe;
