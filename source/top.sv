@@ -16,14 +16,54 @@ module top
   input  logic txready, rxready
 );
 
-  ////////////////////
-  //Image Controller//
-  ////////////////////
-  ic u1 (.clk(hwclk), .nrst(~pb[19]), .enable(pb[2]), .clear(pb[17]), .right(right[3:0]), .left(left[3:0]), .at_end(red));
+  syncro_edgedetector u1 (.clk(hwclk), .nrst(~pb[19]), .button_i(pb[0]), .test_strobe(blue));
+  iamge_controller u2 (.clk(hwclk), .nrst(~pb[19]), .enable(pb[2]), .clear(pb[17]), .right(right[3:0]), .left(left[3:0]), .at_end(red));
 
 
 endmodule
 
+
+////////////    /////////////////
+// SYNCRO // &  //Edge Detector//
+////////////    /////////////////
+module syncro_edgedetector(
+    input logic clk,
+    input logic nrst,
+    input logic button_i,
+    output logic test_strobe //This is just for testing. Will be the circut input in future commits
+
+  );
+
+  ////////////
+  // SYNCRO //
+  ////////////
+  logic desync, sync;
+  always_ff @ (posedge clk, negedge nrst) begin 
+    if(~nrst)
+    begin
+        desync <= 0;
+        sync <= 0;
+    end
+    else
+    begin
+        desync <= button_i;
+        sync <= desync;
+    end
+  end
+
+  ///////////////////
+  // EDGE DETECTOR //
+  ///////////////////
+  logic strobe;
+  always_comb begin 
+    if(desync & ~sync)
+      strobe = 1;
+    else
+      strobe = 0;
+  end 
+
+  assign test_strobe = strobe;   //This is just an FPGA output to test ed/syncro
+endmodule
 
 /////////////////
 //Basic Counter//
@@ -75,7 +115,7 @@ endmodule
 ////////////////////
 //Image Controller//
 ////////////////////
-module ic (
+module iamge_controller (
   input logic clk,
   input logic nrst,
   input logic enable,
@@ -98,5 +138,4 @@ module ic (
     else
       at_end = 0;
   end
-
 endmodule
