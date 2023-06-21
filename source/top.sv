@@ -19,7 +19,7 @@ module top
   ////////////////////
   //Image Controller//
   ////////////////////
-  ic u1 (.clk(pb[3]), .nrst(~pb[19]), .enable(pb[2]), .clear(pb[17]), .right(right[3:0]), .left(left[3:0]), .at_end(red));
+  ic u1 (.clk(hwclk), .nrst(~pb[19]), .enable(pb[2]), .clear(pb[17]), .right(right[3:0]), .left(left[3:0]), .at_end(red));
 
 
 endmodule
@@ -85,9 +85,18 @@ module ic (
   output logic at_end
 );
 
+
+  logic [3:0]max = 4'b1111;
   logic horizontal_strobe, vertical_strobe;
-  counter horiztonal (.clk(clk), .nrst(nrst), .enable(enable), .clear(clear), .wrap(1), .max(4'b111), .count(left), .at_max(horizontal_strobe));
-  counter vertical (.clk(horizontal_strobe), .nrst(nrst), .enable(enable), .clear(clear), .wrap(1), .max(4'b111), .count(right), .at_max(vertical_strobe));  
-  assign at_end = horizontal_strobe & vertical_strobe;
+  counter horiztonal (.clk(clk), .nrst(nrst), .enable(enable), .clear(clear), .wrap(1), .max(max), .count(left), .at_max(horizontal_strobe));
+  counter vertical (.clk(horizontal_strobe), .nrst(nrst), .enable(enable), .clear(clear), .wrap(1), .max(max), .count(right), .at_max(vertical_strobe)); 
+
+  //End state logic where horiztonal has full counted and vertical has fully counted
+  always_comb begin 
+    if (left == 4'b1111 & right == 4'b0000)
+      at_end = 1;
+    else
+      at_end = 0;
+  end
 
 endmodule
