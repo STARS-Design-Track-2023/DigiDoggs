@@ -1,28 +1,3 @@
-`default_nettype none
-
-module top 
-(
-  // I/O ports
-  input  logic hwclk, reset,
-  input  logic [20:0] pb,
-  output logic [7:0] left, right,
-         ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0,
-  output logic red, green, blue,
-
-  // UART ports
-  output logic [7:0] txdata,
-  input  logic [7:0] rxdata,
-  output logic txclk, rxclk,
-  input  logic txready, rxready
-);
-
-  counter u1 (.clk(pb[3]), .nrst(~pb[0]), .enable(pb[1]), .clear(pb[2]), .wrap(1), .max(4), .count(left[3:0]), .at_max(red));
-
-
-endmodule
-
-
-
 /////////////////
 //Basic Counter//
 /////////////////

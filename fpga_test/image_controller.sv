@@ -1,34 +1,8 @@
-`default_nettype none
-
-module top 
-(
-  // I/O ports
-  input  logic hwclk, reset,
-  input  logic [20:0] pb,
-  output logic [7:0] left, right,
-         ss7, ss6, ss5, ss4, ss3, ss2, ss1, ss0,
-  output logic red, green, blue,
-
-  // UART ports
-  output logic [7:0] txdata,
-  input  logic [7:0] rxdata,
-  output logic txclk, rxclk,
-  input  logic txready, rxready
-);
-
-  logic [15:0]data_in; //TO BE REPLACED WITH SPI IN 
-  logic [15:0]data_out; //TO BE REPLACED WITH SPI OUT
-
-  iamge_controller u2 (.clk(hwclk), .nrst(~pb[19]), .enable(pb[2]), .clear(pb[17]), .data_in(data_in), .right(right[3:0]), .left(left[3:0]), .at_end(red), .data_out(data_out));
-
-
-endmodule
-
-
+`include "fpga_test/basic_counter.sv"
 ////////////////////
 //Image Controller//
 ////////////////////
-module iamge_controller (
+module image_controller (
   input logic clk,
   input logic nrst,
   input logic enable,
