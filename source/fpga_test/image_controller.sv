@@ -1,4 +1,4 @@
-`include "fpga_test/basic_counter.sv"
+`include "basic_counter.sv"
 ////////////////////
 //Image Controller//
 ////////////////////
