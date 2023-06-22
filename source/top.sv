@@ -1,5 +1,6 @@
 `default_nettype none
-
+`include "fpga_test/image_controller.sv"
+`include "fpga_test/syncro_edgedetector.sv"
 module top 
 (
   // I/O ports
@@ -15,8 +16,6 @@ module top
   output logic txclk, rxclk,
   input  logic txready, rxready
 );
-
-
 
 endmodule
 
