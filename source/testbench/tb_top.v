@@ -6,11 +6,54 @@
 `define SPI_MESSAGE_WIDTH 2
 `define SPI_MESSAGE_DEPTH 24
 
-module tb_top (
-
-);
+module tb_top ();
     
+    reg tb_clk, tb_nrst;
+    reg tb_real_in, tb_imaginary_in, tb_spi_clk, tb_spi_en;
+    wire tb_is_mandelbrot, tb_valid_out;
+    wire [23:0] tb_RGB;
 
+    task inputs_to_zero();
+        begin
+            tb_real_in = 0;
+            tb_imaginary_in = 0; 
+            tb_spi_clk = 0;
+            tb_spi_en = 0; 
+        end
+    endtask
+
+    initial begin
+        $dumpfile ("dump.vcd");
+        $dumpvars;
+    end
+
+    
+    always begin
+        tb_clk = 1'b0;
+        #(`CLOCK_PERIOD / 2);
+        tb_clk = 1'b1;
+        #(`CLOCK_PERIOD / 2);
+    end
+
+    ref_top DUT (
+        .clk(tb_clk), .nrst(tb_nrst),
+        .spi_clk(tb_spi_clk),
+        .spi_en(tb_spi_en),
+        .spi_data({tb_real_in, tb_imaginary_in}),
+        .is_mandelbrot(tb_is_mandelbrot),
+        .valid_out(tb_valid_out)
+    );
+
+    initial begin
+        tb_nrst = `RESET_ACTIVE;
+        #(`CLOCK_PERIOD * 1);
+        inputs_to_zero();
+        #(`CLOCK_PERIOD * 2);
+        tb_nrst = `RESET_INACTIVE;
+        #(`CLOCK_PERIOD * 10);
+
+        $finish;
+    end
 
 endmodule
 
@@ -25,10 +68,13 @@ IF YOU ARE PART OF MY GROUP, THERE IS NOTHING BELOW THIS COMMENT BLOCK :)
 module ref_top (
     input wire clk, nrst, spi_clk, spi_en,
     input wire [`SPI_MESSAGE_WIDTH-1:0] spi_data,
-    output reg [`SPI_MESSAGE_DEPTH-1:0] color 
+    output reg valid_out,
+    output wire is_mandelbrot,
+    output wire [23:0] color 
 );
 
-    wire valid_data;
+    wire valid_data, next_valid_output;
+    wire [7:0] iterations;
     wire [`SPI_MESSAGE_WIDTH * `SPI_MESSAGE_DEPTH - 1:0] spi_data_out;
 
     ref_spi #(
@@ -43,9 +89,92 @@ module ref_top (
         .data_out(spi_data_out)
     );
 
-    // ref_mandelbrotetron 
+    ref_mandelbrotetron #(
+        .FIXED_POINT_WIDTH(`SPI_MESSAGE_DEPTH),
+        .MAX_ITER(256)
+    ) mandelbrot (
+        .clk(clk), .nrst(nrst),
+        .start(valid_data), 
+        .c_real_in(spi_data[2*`SPI_MESSAGE_DEPTH-1:`SPI_MESSAGE_DEPTH]), 
+        .c_imaginary_in(spi_data[`SPI_MESSAGE_DEPTH-1:0]),
+        .valid(next_valid_output),
+        .is_mandelbrot(is_mandelbrot),
+        .iterations(iterations) 
+    );
+
+    ref_color_converter color_module (
+        .iteration(iterations),
+        .ismandelbrot(is_mandelbrot),
+        .RGB(color)
+    );
+
+    always @(posedge clk, negedge nrst) begin
+        if (~nrst)
+            valid_out <= 0;
+        else
+            valid_out <= next_valid_output;
+    end
 
 endmodule
+
+module ref_color_converter(
+    input wire [7:0] iteration, 
+    input wire ismandelbrot, 
+    output wire [23:0] RGB
+);
+
+    reg [7:0] R, G, B;
+
+    always @(*) begin 
+        if (ismandelbrot) begin
+            R = 8'b0;
+            G = 8'b0;
+            B = 8'b0;
+        end
+        else begin
+            R = iteration;
+            G = iteration;
+            B = iteration;
+        end
+    end
+
+    assign RGB = {R, G, B};
+
+endmodule
+
+/*
+
+Blue - gray - yellow
+R = iteration;
+G = (iteration < 128) ? ~iteration : iteration; 
+B = ~iteration;
+
+Blue - green - red
+R = iteration >= 128 ? iteration << 1 : 0;
+G = (iteration >= 128 && iteration <  192) ? ~(iteration << 2) : 
+    (iteration <  128 && iteration >  64)  ?  (iteration << 2) : 0;
+B = iteration < 128 ? ~(iteration << 1) : 0; 
+
+Black - white stripes
+R = ^(iteration[3:2]) ? 0 : 8'hFF;
+G = ^(iteration[3:2]) ? 0 : 8'hFF;
+B = ^(iteration[3:2]) ? 0 : 8'hFF;
+
+Vaporwave (orange)
+R = (iteration < 128) ? ~iteration : (iteration > 128) ? 8'h80 + (iteration << 1 >> 1) : 8'h80;
+G = (iteration < 128) ? iteration : 8'h80;
+B = (iteration < 128) ? 8'hFF : 255 - (iteration << 1);
+
+Vaporwave (yellow)
+R = (iteration < 128) ? ~iteration : (iteration > 128) ? 8'h80 + (iteration << 1 >> 1) : 8'h80;
+G = (iteration < 128) ? iteration : (iteration > 192) ? 8'h80 + (iteration << 2 >> 1) : 8'h80;
+B = (iteration < 128) ? 8'hFF : 255 - (iteration << 1);
+
+// R = (iteration < 128) ? ~iteration : (iteration > 128) ? 8'h80 + (iteration << 1 >> 1) : 8'h80;
+// G = (iteration < 128) ? iteration : (iteration > 192) ? 8'h80 + (iteration << 2 >> 2) + (iteration << 2 >> 3) : 8'h80;
+// B = (iteration < 128) ? 8'hFF : 255 - (iteration << 1);
+
+*/
 
 module ref_mandelbrotetron #(
     parameter FIXED_POINT_WIDTH = 16,
@@ -54,16 +183,19 @@ module ref_mandelbrotetron #(
     input wire clk, nrst, start, 
     input wire signed [FIXED_POINT_WIDTH-1:0] c_real_in, c_imaginary_in,
     output reg valid,
-    output reg is_mandelbrot,
-    output reg [$clog2(MAX_ITER)-1:0] iterations 
+    output wire is_mandelbrot,
+    output wire [$clog2(MAX_ITER)-1:0] iterations 
 );
+
+    wire stop;
+    assign stop = max_iter_reached | ~is_mandelbrot;
 
     //////////////////////////////
     // MANDELBROT-IFICATION!!!! //
     //////////////////////////////
 
     reg signed [FIXED_POINT_WIDTH-1:0] c_real, c_imaginary, z_real, z_imaginary;
-    wire signed [FIXED_POINT_WIDTH-1:0] next_c_real, next_c_imaginary, next_z_real, next_z_imaginary;
+    reg signed [FIXED_POINT_WIDTH-1:0] next_c_real, next_c_imaginary, next_z_real, next_z_imaginary;
     wire signed [FIXED_POINT_WIDTH-1:0] computed_z_real, computed_z_imaginary;
 
     always @(posedge clk, negedge nrst) begin
@@ -78,6 +210,27 @@ module ref_mandelbrotetron #(
             c_imaginary <= next_c_imaginary; 
             z_real <= next_z_real; 
             z_imaginary <= next_z_imaginary;
+        end
+    end
+
+    always @(*) begin
+        if (start) begin
+            next_c_real = c_real_in;
+            next_c_imaginary = c_imaginary_in;
+            next_z_real = 0;
+            next_z_imaginary = 0;
+        end
+        else if (~stop) begin
+            next_c_real = c_real;
+            next_c_imaginary = c_imaginary;
+            next_z_real = computed_z_real;
+            next_z_imaginary = computed_z_imaginary;
+        end
+        else begin
+            next_c_real = c_real;
+            next_c_imaginary = c_imaginary;
+            next_z_real = z_real;
+            next_z_imaginary = z_imaginary;
         end
     end
 
@@ -104,41 +257,55 @@ module ref_mandelbrotetron #(
         .clk(clk), .nrst(nrst),
         .clear(start),
         .wrap(1'b0),
-        .en(/* TODO */),
+        .en(~stop),
         .max(MAX_ITER[$clog2(MAX_ITER)-1:0]),
-        .count(/* TODO */),
+        .count(iterations),
         .at_max(max_iter_reached)
     );
+
+    /////////////////////////
+    // MANDELBROT DETECTOR //
+    /////////////////////////
+
+    // Sees wether the 2^1 bit on either input is high
+    assign is_mandelbrot = ~(computed_z_real[FIXED_POINT_WIDTH - 2] | computed_z_real[FIXED_POINT_WIDTH - 2]);
 
     /////////////////////////////////////
     // Start and valid signal handling //
     /////////////////////////////////////
 
-    // always @(posedge clk, negedge nrst) begin
-    //     if (~nrst)
-    //         valid <= 0;
-    //     else 
-    //         valid <= next_valid;
-    // end
+    wire next_valid;
+
+    always @(posedge clk, negedge nrst) begin
+        if (~nrst)
+            valid <= 0;
+        else 
+            valid <= next_valid;
+    end
+
+    assign next_valid = ~stop && ~start;
 
 endmodule
 
 // This module may totally not work!
-// Inputs: One sign, one integral, the rest are fractional (e.g. SI.FFFF...)
+// Inputs: One sign, two integral, the rest are fractional (e.g. SII.FFFF...)
 module ref_new_z #(
     parameter FIXED_POINT_WIDTH = 16 
 ) (
     input wire signed [FIXED_POINT_WIDTH-1:0] z_real, z_imaginary, c_real, c_imaginary,
     output wire signed [FIXED_POINT_WIDTH-1:0] new_z_real, new_z_imaginary
 );
+    wire signed [FIXED_POINT_WIDTH-1:0] z_real_squared, z_imaginary_squared;
+    wire signed [FIXED_POINT_WIDTH-1:0] intermediate_real, intermediate_imaginary;
 
-    wire signed [2*FIXED_POINT_WIDTH-1:0] intermediate_real, intermediate_imaginary;
+    assign z_real_squared = (z_real * z_real) >> FIXED_POINT_WIDTH;
+    assign z_imaginary_squared = (z_imaginary * z_imaginary) >> FIXED_POINT_WIDTH;
 
-    assign intermediate_real = (z_real * z_real - z_imaginary * z_imaginary);
-    assign intermediate_imaginary = (2 * z_real * z_imaginary);
+    assign intermediate_real = (z_real_squared - z_imaginary_squared);
+    assign intermediate_imaginary = (2 * z_real * z_imaginary) >> (FIXED_POINT_WIDTH + 1);
 
-    assign new_z_real = $signed(intermediate_real[2*FIXED_POINT_WIDTH-1:FIXED_POINT_WIDTH]) + c_real;
-    assign new_z_imaginary = $signed(intermediate_imaginary[2*FIXED_POINT_WIDTH-1:FIXED_POINT_WIDTH]) + c_imaginary;
+    assign new_z_real = intermediate_real + c_real;
+    assign new_z_imaginary = intermediate_imaginary + c_imaginary;
 endmodule
 
 module ref_spi #(
