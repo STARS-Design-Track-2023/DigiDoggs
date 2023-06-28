@@ -1,8 +1,9 @@
 # STARS 2023 Design Final Project
 
+## [DigiDoggs]
 ![Alt text](imgs/image-2.png)
 
-## [DigiDoggs]
+## [Group Members]
 * [Connor Powell]
 * [Farren Martinus]
 * [Isaac Bourff]
