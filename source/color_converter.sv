@@ -1,4 +1,4 @@
-module color_converterBNW(input logic [7:0] iteration, 
+module color_converter(input logic [7:0] iteration, 
 input logic ismandelbrot, 
 output logic [23:0] RGB);
 
