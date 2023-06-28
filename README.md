@@ -27,15 +27,15 @@ Copy paste the suppoting files into the <.inc> folder and the <.main> and then b
 After wiring everything properly and downloading supporting softwares you can press the reset button on the MCU to render the fractal again (it should render right after the last step)
 
 ## Pin Layout
-//MORE TO BE ADDED HERE WHEN WE KNOW//
+//MORE TO BE ADDED HERE WHEN WE KNOW//  
 LCD Wiring to the MCU Diagram
 ![Alt text](image.png)
 
 ## Supporting Equipment
-STM32F091RCT microcontroller development board
-MB-108 R.S.R Electronics Breadboard
-Windows/OSX/Linux Laptop with System Workbench installed/setup
-QVGA 2.2 inch TFT SPI 240x320 LCD 
+STM32F091RCT microcontroller development board  
+MB-108 R.S.R Electronics Breadboard  
+Windows/OSX/Linux Laptop with System Workbench installed/setup  
+QVGA 2.2 inch TFT SPI 240x320 LCD   
 
 ## RTL Diagrams
 All the stuff from the proposal goes here, obviously updated from the time you did the proposal to the final layout
