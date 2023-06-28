@@ -1,14 +1,21 @@
 # STARS 2023 Design Final Project
 
-## [Team Name]
-* [Name]
-* [Name]
-* [Name]
-* [Name]
-* [TA]
+## [DigiDoggs]
+* [Connor Powell]
+* [Farren Martinus]
+* [Isaac Bourff]
+* [Xavier Williams]
+* [Spencer Bowles]
 
-## [Project Name]
-Description of functionality, how to use it, and any supporting equipment required
+## [Spi Mandlebrot Rendering]
+Functionality:
+
+    The chip we developed performs calculations for generating the Mandelbrot fractal using imaginary number generation. It contains a specialized algorithm to efficiently compute the complex mathematical calculations involved in rendering the fractal. If you would like more context as to what is going on behind the scenes here is a link to check out: Mandlebrot Fractal[https://mathigon.org/course/fractals/mandelbrot]
+
+    The microcontroller acts as a control unit, managing the communication between the integrated chip and other components.
+
+    The SPI interface enables data transfer between the microcontroller and the integrated chip. It allows the microcontroller to send configuration parameters and receive calculated data from the chip.
+
 
 ## Pin Layout
 Put all the GPIO pin numbers, i/o/io determination, and labels

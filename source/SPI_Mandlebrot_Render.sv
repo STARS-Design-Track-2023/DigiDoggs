@@ -1,5 +1,5 @@
 `default_nettype none
-module insert_project_name_here (
+module SPI_Mandlebrot_Render (
     // HW
     input logic clk, nrst,
     
