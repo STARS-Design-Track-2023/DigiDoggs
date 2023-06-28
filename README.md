@@ -38,8 +38,8 @@ Windows/OSX/Linux Laptop with System Workbench installed/setup
 QVGA 2.2 inch TFT SPI 240x320 LCD   
 
 ## RTL Diagrams
-All the stuff from the proposal goes here, obviously updated from the time you did the proposal to the final layout
-Include more than just block diagrams, including sub-block diagrams, state-transition diagrams, flowcharts, and timing diagrams
+Top Level RTL:
+![Alt text](image-1.png)
 
 ## Some Legal Statement
 From Purdue that I haven't figured out yet, maybe some stuff about Dr. J, the program, and other instructors
