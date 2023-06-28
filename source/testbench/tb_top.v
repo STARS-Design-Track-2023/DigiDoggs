@@ -97,7 +97,8 @@ module tb_top ();
         #(`CLOCK_PERIOD * 5);
 
         // -1 + 0.5i
-        tb_spi_next_packet = 64'b0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_0000_0101;
+        //                       FFFF FFFF FFFF FFFF FFFF FFFF FFFF FIIS FFFF FFFF FFFF FFFF FFFF FFFF FFFF FIIS
+        tb_spi_next_packet = 64'b0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_0000_1111;
         send_packet();
 
         @(posedge tb_valid_out);
@@ -124,7 +125,7 @@ module ref_top (
     output wire [23:0] color 
 );
 
-    wire valid_data, next_valid_output;
+    wire spi_valid_data, mandelbrot_valid_output, next_valid_output;
     wire [7:0] iterations;
     wire [`SPI_MESSAGE_WIDTH * `SPI_MESSAGE_DEPTH - 1:0] spi_data_out;
 
@@ -136,7 +137,7 @@ module ref_top (
         .spi_clk(spi_clk),
         .spi_en(spi_en),
         .spi_data(spi_data),
-        .valid_data(valid_data),
+        .valid_data(spi_valid_data),
         .data_out(spi_data_out)
     );
 
@@ -145,10 +146,10 @@ module ref_top (
         .MAX_ITER(`MANDELBROT_MAX_ITERATIONS)
     ) mandelbrot (
         .clk(clk), .nrst(nrst),
-        .start(valid_data), 
+        .start(spi_valid_data), 
         .c_real_in(spi_data_out[2*`SPI_MESSAGE_DEPTH-1:`SPI_MESSAGE_DEPTH]), 
         .c_imaginary_in(spi_data_out[`SPI_MESSAGE_DEPTH-1:0]),
-        .valid(next_valid_output),
+        .valid(mandelbrot_valid_output),
         .is_mandelbrot(is_mandelbrot),
         .iterations(iterations) 
     );
@@ -165,6 +166,8 @@ module ref_top (
         else
             valid_out <= next_valid_output;
     end
+
+    assign next_valid_output = mandelbrot_valid_output && ~spi_valid_data;
 
 endmodule
 
@@ -318,8 +321,11 @@ module ref_mandelbrotetron #(
     // MANDELBROT DETECTOR //
     /////////////////////////
 
-    // Sees wether the 2^1 bit on either input is high
-    assign is_mandelbrot = ~(computed_z_real[FIXED_POINT_WIDTH - 2] | computed_z_real[FIXED_POINT_WIDTH - 2]);
+    // Sees wether the 2^1 bit on either input is high (edit: two's compliment)
+    // assign is_mandelbrot = ~(computed_z_real >= 2 | computed_z_imaginary >= 2);
+    assign is_mandelbrot = ~(computed_z_real * computed_z_real + computed_z_imaginary * computed_z_imaginary >= 4);
+    // assign is_mandelbrot = ~(computed_z_real[FIXED_POINT_WIDTH - 2] ^ computed_z_real[FIXED_POINT_WIDTH - 1] 
+                                // | computed_z_imaginary[FIXED_POINT_WIDTH - 2] ^ computed_z_imaginary[FIXED_POINT_WIDTH - 1]);
 
     /////////////////////////////////////
     // Start and valid signal handling //
@@ -346,10 +352,12 @@ module ref_new_z #(
     input wire signed [FIXED_POINT_WIDTH-1:0] z_real, z_imaginary, c_real, c_imaginary,
     output wire signed [FIXED_POINT_WIDTH-1:0] new_z_real, new_z_imaginary
 );
-    wire signed [FIXED_POINT_WIDTH-1:0] z_real_squared, z_imaginary_squared;
-    wire signed [FIXED_POINT_WIDTH-1:0] intermediate_real, intermediate_imaginary;
-
+    wire signed [2*FIXED_POINT_WIDTH-1:0] z_real_squared, z_imaginary_squared;
+    // wire signed [FIXED_POINT_WIDTH-1:0] z_real_squared, z_imaginary_squared;
+    wire signed [2*FIXED_POINT_WIDTH-1:0] intermediate_real, intermediate_imaginary;
+    
     assign z_real_squared = ((z_real * z_real) << 3) >> FIXED_POINT_WIDTH;
+    // assign z_real_squared = ((z_real * z_real) << 3) >> FIXED_POINT_WIDTH;
     assign z_imaginary_squared = ((z_imaginary * z_imaginary) << 3) >> FIXED_POINT_WIDTH;
 
     assign intermediate_real = (z_real_squared - z_imaginary_squared);
