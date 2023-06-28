@@ -1,26 +1,56 @@
 `timescale 1ns/100ps
 `define CLOCK_PERIOD 100
+`define SPI_MASTER_CLOCK_PERIOD 425
 `define RESET_INACTIVE 1
 `define RESET_ACTIVE 0
 
 `define SPI_MESSAGE_WIDTH 2
-`define SPI_MESSAGE_DEPTH 24
+`define SPI_MESSAGE_DEPTH 32
+`define MANDELBROT_MAX_ITERATIONS 255
 
 module tb_top ();
+
+    integer i;
     
     reg tb_clk, tb_nrst;
-    reg tb_real_in, tb_imaginary_in, tb_spi_clk, tb_spi_en;
+    reg tb_spi_data, tb_imaginary_in, tb_spi_clk, tb_spi_en;
     wire tb_is_mandelbrot, tb_valid_out;
     wire [23:0] tb_RGB;
 
-    task inputs_to_zero();
+    reg tb_spi_clk_active;
+    reg [63:0] tb_spi_packet;
+    reg [63:0] tb_spi_next_packet;
+
+    task inputs_to_zero;
         begin
-            tb_real_in = 0;
+            tb_spi_data = 0;
             tb_imaginary_in = 0; 
-            tb_spi_clk = 0;
+            tb_spi_clk_active = 0;
             tb_spi_en = 0; 
         end
     endtask
+
+    task send_packet;
+        begin
+            @(negedge tb_clk);
+
+            tb_spi_packet = tb_spi_next_packet;
+            tb_spi_en = 1;
+            tb_spi_clk_active = 1;
+            
+            tb_spi_data = tb_spi_packet[0];
+            for (i = 0; i < `SPI_MESSAGE_DEPTH * `SPI_MESSAGE_WIDTH; i = i + 1) begin
+                @(negedge tb_spi_clk);
+                tb_spi_packet = tb_spi_packet >> 1;
+                tb_spi_data = tb_spi_packet[0];
+                #(0.1);
+            end
+
+            tb_spi_en = 0;
+            tb_spi_clk_active = 0;
+        end
+    endtask
+
 
     initial begin
         $dumpfile ("dump.vcd");
@@ -35,11 +65,18 @@ module tb_top ();
         #(`CLOCK_PERIOD / 2);
     end
 
+    always begin
+        tb_spi_clk = 1'b0;
+        #(`SPI_MASTER_CLOCK_PERIOD / 2);
+        tb_spi_clk = tb_spi_clk_active;
+        #(`SPI_MASTER_CLOCK_PERIOD / 2);
+    end
+
     ref_top DUT (
         .clk(tb_clk), .nrst(tb_nrst),
         .spi_clk(tb_spi_clk),
         .spi_en(tb_spi_en),
-        .spi_data({tb_real_in, tb_imaginary_in}),
+        .spi_data(tb_spi_data),
         .is_mandelbrot(tb_is_mandelbrot),
         .valid_out(tb_valid_out)
     );
@@ -50,6 +87,20 @@ module tb_top ();
         inputs_to_zero();
         #(`CLOCK_PERIOD * 2);
         tb_nrst = `RESET_INACTIVE;
+        #(`CLOCK_PERIOD * 10);
+
+        // -0 + 0i
+        tb_spi_next_packet = 64'b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001;
+        send_packet();
+
+        @(posedge tb_valid_out);
+        #(`CLOCK_PERIOD * 5);
+
+        // -1 + 0.5i
+        tb_spi_next_packet = 64'b0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_0000_0101;
+        send_packet();
+
+        @(posedge tb_valid_out);
         #(`CLOCK_PERIOD * 10);
 
         $finish;
@@ -67,7 +118,7 @@ IF YOU ARE PART OF MY GROUP, THERE IS NOTHING BELOW THIS COMMENT BLOCK :)
 
 module ref_top (
     input wire clk, nrst, spi_clk, spi_en,
-    input wire [`SPI_MESSAGE_WIDTH-1:0] spi_data,
+    input wire spi_data,
     output reg valid_out,
     output wire is_mandelbrot,
     output wire [23:0] color 
@@ -91,12 +142,12 @@ module ref_top (
 
     ref_mandelbrotetron #(
         .FIXED_POINT_WIDTH(`SPI_MESSAGE_DEPTH),
-        .MAX_ITER(256)
+        .MAX_ITER(`MANDELBROT_MAX_ITERATIONS)
     ) mandelbrot (
         .clk(clk), .nrst(nrst),
         .start(valid_data), 
-        .c_real_in(spi_data[2*`SPI_MESSAGE_DEPTH-1:`SPI_MESSAGE_DEPTH]), 
-        .c_imaginary_in(spi_data[`SPI_MESSAGE_DEPTH-1:0]),
+        .c_real_in(spi_data_out[2*`SPI_MESSAGE_DEPTH-1:`SPI_MESSAGE_DEPTH]), 
+        .c_imaginary_in(spi_data_out[`SPI_MESSAGE_DEPTH-1:0]),
         .valid(next_valid_output),
         .is_mandelbrot(is_mandelbrot),
         .iterations(iterations) 
@@ -283,7 +334,7 @@ module ref_mandelbrotetron #(
             valid <= next_valid;
     end
 
-    assign next_valid = ~stop && ~start;
+    assign next_valid = stop && ~start;
 
 endmodule
 
@@ -298,11 +349,11 @@ module ref_new_z #(
     wire signed [FIXED_POINT_WIDTH-1:0] z_real_squared, z_imaginary_squared;
     wire signed [FIXED_POINT_WIDTH-1:0] intermediate_real, intermediate_imaginary;
 
-    assign z_real_squared = (z_real * z_real) >> FIXED_POINT_WIDTH;
-    assign z_imaginary_squared = (z_imaginary * z_imaginary) >> FIXED_POINT_WIDTH;
+    assign z_real_squared = ((z_real * z_real) << 3) >> FIXED_POINT_WIDTH;
+    assign z_imaginary_squared = ((z_imaginary * z_imaginary) << 3) >> FIXED_POINT_WIDTH;
 
     assign intermediate_real = (z_real_squared - z_imaginary_squared);
-    assign intermediate_imaginary = (2 * z_real * z_imaginary) >> (FIXED_POINT_WIDTH + 1);
+    assign intermediate_imaginary = ((2 * z_real * z_imaginary) << 3) >> (FIXED_POINT_WIDTH + 1);
 
     assign new_z_real = intermediate_real + c_real;
     assign new_z_imaginary = intermediate_imaginary + c_imaginary;
@@ -313,7 +364,7 @@ module ref_spi #(
     parameter DATA_DEPTH = 16
 ) (
     input wire clk, nrst, spi_clk, spi_en, 
-    input wire [DATA_WIDTH-1:0] spi_data, 
+    input wire spi_data, 
     output wire valid_data, // Output of edge detector, valid for 1 clock cylce
     output reg [DATA_WIDTH * DATA_DEPTH - 1:0] data_out // Valid when valid_data is high
 );
@@ -326,7 +377,7 @@ module ref_spi #(
     wire spi_en_sync;
     wire spi_en_edge_sync;
     wire spi_en_edge;
-    wire [DATA_WIDTH-1:0] spi_data_sync;
+    wire spi_data_sync;
 
     // SPI Clock Input  
     ref_syncronizer #(.DEPTH(2)) spi_clk_syncronizer (
@@ -361,7 +412,7 @@ module ref_spi #(
     );
 
     // SPI Data Input
-    ref_syncronizer #(.DEPTH(3), .WIDTH(DATA_WIDTH)) 
+    ref_syncronizer #(.DEPTH(3)) 
     spi_data_syncronizer (
         .clk(clk), .nrst(nrst),
         .async_in(spi_data),
@@ -381,16 +432,12 @@ module ref_spi #(
             data_out <= next_data_out; 
     end
 
-    generate
-        for (genvar i = 0; i < DATA_WIDTH; i = i + 1) begin
-            ref_shift_reg #(.DEPTH(DATA_DEPTH)) spi_shift_reg (
-                .clk(clk), .nrst(nrst),
-                .en(spi_clk_edge),
-                .q(spi_data_sync[i]),
-                .p_out(next_data_out[DATA_DEPTH*(i+1) - 1:DATA_DEPTH*i])
-            );
-        end
-    endgenerate
+    ref_shift_reg #(.DEPTH(DATA_DEPTH * DATA_WIDTH)) spi_shift_reg (
+        .clk(clk), .nrst(nrst),
+        .en(spi_clk_edge),
+        .q(spi_data_sync),
+        .p_out(next_data_out)
+    );
 
     /////////////////////////////////////////
     // CRAZY COUNTER CARNIVAL (I AM SANE!) //
@@ -398,12 +445,12 @@ module ref_spi #(
 
     wire all_data_received;
 
-    ref_counter #(.N($clog2(DATA_DEPTH))) spi_data_counter (
+    ref_counter #(.N($clog2(DATA_DEPTH*DATA_WIDTH+1))) spi_data_counter (
         .clk(clk), .nrst(nrst),
         .clear(spi_en_edge), 
         .en(spi_clk_edge),
         .wrap(1'b0),
-        .max(DATA_DEPTH[$clog2(DATA_DEPTH)-1:0]),
+        .max(DATA_DEPTH*DATA_WIDTH),
         .count(),
         .at_max(all_data_received)
     );
@@ -477,7 +524,7 @@ module ref_shift_reg #(
         if (~nrst) 
             p_out <= 0;
         else
-            p_out = {p_out[DEPTH-2:0], q};
+            p_out = next_p_out;
     end
 
     assign next_p_out = en ? p_shifted : p_out;
@@ -521,5 +568,7 @@ module ref_counter #(
             default: next_count = 'bx; // "Oh shit something went wrong" condition
         endcase
     end
+
+    assign at_max = (count == max);
     
 endmodule
