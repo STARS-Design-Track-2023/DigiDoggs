@@ -1,5 +1,7 @@
 # STARS 2023 Design Final Project
 
+![Alt text](image-2.png)
+
 ## [DigiDoggs]
 * [Connor Powell]
 * [Farren Martinus]
