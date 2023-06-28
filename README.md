@@ -1,6 +1,6 @@
 # STARS 2023 Design Final Project
 
-![Alt text](image-2.png)
+![Alt text](imgs/image-2.png)
 
 ## [DigiDoggs]
 * [Connor Powell]
@@ -31,7 +31,7 @@ After wiring everything properly and downloading supporting softwares you can pr
 ## Pin Layout
 //MORE TO BE ADDED HERE WHEN WE KNOW//  
 LCD Wiring to the MCU Diagram
-![Alt text](image.png)
+![Alt text](imgs/image.png)
 
 ## Supporting Equipment
 STM32F091RCT microcontroller development board  
@@ -41,7 +41,7 @@ QVGA 2.2 inch TFT SPI 240x320 LCD
 
 ## RTL Diagrams
 Top Level RTL:
-![Alt text](image-1.png)
+![Alt text](imgs/image-1.png)
 
 ## Some Legal Statement
 From Purdue that I haven't figured out yet, maybe some stuff about Dr. J, the program, and other instructors
