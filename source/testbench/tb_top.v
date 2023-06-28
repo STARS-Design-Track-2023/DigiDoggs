@@ -532,7 +532,7 @@ module ref_shift_reg #(
         if (~nrst) 
             p_out <= 0;
         else
-            p_out = next_p_out;
+            p_out <= next_p_out;
     end
 
     assign next_p_out = en ? p_shifted : p_out;
