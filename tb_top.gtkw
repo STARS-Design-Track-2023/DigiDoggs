@@ -1,0 +1,451 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Wed Jun 28 16:13:15 2023
+[*]
+[dumpfile] "/home/shay/c/ecng062/Documents/STARS/DigiDoggs/dump.vcd"
+[dumpfile_mtime] "Wed Jun 28 15:36:32 2023"
+[dumpfile_size] 106830
+[savefile] "/home/shay/c/ecng062/Documents/STARS/DigiDoggs/tb_top.gtkw"
+[timestart] 80640000
+[size] 1846 1016
+[pos] -1 -1
+*-18.696724 81950000 81950000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_top.
+[treeopen] tb_top.DUT.
+[treeopen] tb_top.DUT.mandelbrot.
+[sst_width] 310
+[signals_width] 254
+[sst_expanded] 1
+[sst_vpaned_height] 289
+@28
+tb_top.tb_clk
+tb_top.tb_nrst
+@200
+-
+-~~TB~~
+-Inputs:
+@28
+tb_top.tb_spi_clk
+tb_top.tb_spi_en
+tb_top.tb_imaginary_in
+@200
+-
+-Outputs:
+@28
+tb_top.tb_is_mandelbrot
+tb_top.tb_valid_out
+@200
+-
+-~~SPI~~
+-clk SYNC
+@28
+tb_top.DUT.input_spi.spi_clk
+tb_top.DUT.input_spi.spi_clk_edge
+@200
+-en SYNC
+@28
+tb_top.DUT.input_spi.spi_en
+tb_top.DUT.input_spi.spi_en_edge
+tb_top.DUT.input_spi.spi_en_sync
+@200
+-data SYNC
+@28
+tb_top.DUT.input_spi.spi_data
+tb_top.DUT.input_spi.spi_data_sync
+@200
+-
+-Count and Out
+@28
+tb_top.DUT.input_spi.valid_data
+tb_top.DUT.input_spi.all_data_received
+@22
+tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+@c00022
+tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+@28
+(0)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(1)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(2)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(3)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(4)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(5)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(6)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(7)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(8)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(9)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(10)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(11)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(12)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(13)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(14)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(15)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(16)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(17)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(18)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(19)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(20)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(21)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(22)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(23)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(24)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(25)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(26)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(27)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(28)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(29)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(30)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(31)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(32)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(33)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(34)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(35)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(36)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(37)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(38)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(39)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(40)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(41)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(42)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(43)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(44)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(45)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(46)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(47)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(48)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(49)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(50)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(51)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(52)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(53)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(54)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(55)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(56)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(57)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(58)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(59)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(60)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(61)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(62)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+(63)tb_top.DUT.input_spi.spi_shift_reg.p_out[63:0]
+@1401200
+-group_end
+@200
+-
+-~~MANDELBROT~~
+@28
+tb_top.DUT.mandelbrot.c_real[31:0]
+tb_top.DUT.mandelbrot.c_imaginary[31:0]
+tb_top.DUT.mandelbrot.z_real[31:0]
+tb_top.DUT.mandelbrot.z_imaginary[31:0]
+@200
+-Calculations
+@c00028
+[color] 3
+tb_top.DUT.mandelbrot.next_z_real[31:0]
+@28
+[color] 3
+(0)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(1)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(2)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(3)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(4)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(5)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(6)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(7)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(8)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(9)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(10)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(11)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(12)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(13)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(14)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(15)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(16)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(17)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(18)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(19)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(20)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(21)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(22)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(23)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(24)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(25)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(26)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(27)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(28)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(29)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(30)tb_top.DUT.mandelbrot.next_z_real[31:0]
+[color] 3
+(31)tb_top.DUT.mandelbrot.next_z_real[31:0]
+@1401200
+-group_end
+@c00028
+[color] 3
+tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+@28
+[color] 3
+(0)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(1)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(2)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(3)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(4)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(5)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(6)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(7)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(8)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(9)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(10)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(11)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(12)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(13)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(14)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(15)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(16)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(17)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(18)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(19)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(20)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(21)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(22)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(23)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(24)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(25)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(26)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(27)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(28)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(29)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(30)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+[color] 3
+(31)tb_top.DUT.mandelbrot.next_z_imaginary[31:0]
+@1401200
+-group_end
+@c00028
+[color] 2
+tb_top.DUT.mandelbrot.computed_z_real[31:0]
+@28
+[color] 2
+(0)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(1)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(2)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(3)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(4)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(5)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(6)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(7)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(8)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(9)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(10)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(11)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(12)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(13)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(14)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(15)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(16)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(17)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(18)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(19)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(20)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(21)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(22)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(23)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(24)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(25)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(26)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(27)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(28)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(29)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(30)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+[color] 2
+(31)tb_top.DUT.mandelbrot.computed_z_real[31:0]
+@1401200
+-group_end
+@c00028
+[color] 2
+tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+@28
+[color] 2
+(0)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(1)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(2)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(3)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(4)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(5)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(6)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(7)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(8)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(9)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(10)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(11)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(12)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(13)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(14)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(15)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(16)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(17)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(18)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(19)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(20)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(21)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(22)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(23)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(24)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(25)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(26)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(27)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(28)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(29)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(30)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+[color] 2
+(31)tb_top.DUT.mandelbrot.computed_z_imaginary[31:0]
+@1401200
+-group_end
+@200
+-Intermediates
+@28
+tb_top.DUT.mandelbrot.z_function.z_real_squared[63:0]
+tb_top.DUT.mandelbrot.z_function.z_imaginary_squared[63:0]
+@200
+-Iterations
+@22
+tb_top.DUT.mandelbrot.iterations[7:0]
+@29
+[color] 1
+tb_top.DUT.mandelbrot.stop
+@28
+[color] 2
+tb_top.DUT.mandelbrot.start
+[color] 2
+tb_top.DUT.mandelbrot.is_mandelbrot
+@200
+-
+-~~Valid Out~~
+@22
+[color] 1
+tb_top.DUT.color_module.R[7:0]
+tb_top.DUT.color_module.G[7:0]
+[color] 5
+tb_top.DUT.color_module.B[7:0]
+@28
+tb_top.DUT.valid_out
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,0 +1,4 @@
+xt
+sim_build/sim_source.vvp
+dump.vcd
+Makefile
