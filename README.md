@@ -7,7 +7,7 @@
 * [Xavier Williams]
 * [Spencer Bowles]
 
-## [Spi Mandlebrot Rendering]
+## [Spi Mandlebrot Renderer]
 **Functionality:**
 
 The chip we developed performs calculations for generating the Mandelbrot fractal using imaginary number generation. It contains a specialized algorithm to efficiently compute the complex mathematical calculations involved in rendering the fractal. If you would like more context as to what is going on behind the scenes here is a link to check out: [Mandlebrot Fractal](https://mathigon.org/course/fractals/mandelbrot)

@@ -1,5 +1,5 @@
 `default_nettype none
-module SPI_Mandlebrot_Render (
+module SPI_Mandlebrot_Renderer (
     // HW
     input logic clk, nrst,
     
