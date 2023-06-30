@@ -1,11 +1,11 @@
 `default_nettype none
 `define SPI_MESSAGE_WIDTH 2
-`define SPI_MESSAGE_DEPTH 32
+`define SPI_MESSAGE_DEPTH 16
 `define MANDELBROT_MAX_ITERATIONS 255
 
-`include "sync.sv"
-`include "edge_detector.sv"
-`include "color_converter.sv"
+// `include "sync.sv"
+// `include "edge_detector.sv"
+// `include "color_converter.sv"
 
 
 module pushing_pixels (

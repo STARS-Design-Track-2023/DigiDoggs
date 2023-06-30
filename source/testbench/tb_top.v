@@ -72,7 +72,7 @@ module tb_top ();
         #(`SPI_MASTER_CLOCK_PERIOD / 2);
     end
 
-    ref_top DUT (
+    pushing_pixels DUT (
         .clk(tb_clk), .nrst(tb_nrst),
         .spi_clk(tb_spi_clk),
         .spi_en(tb_spi_en),
@@ -116,6 +116,8 @@ IF YOU ARE PART OF MY GROUP, THERE IS NOTHING BELOW THIS COMMENT BLOCK :)
     - Spencer B
 
 ************************************************************************/
+
+/*
 
 module ref_top (
     input wire clk, nrst, spi_clk, spi_en,
@@ -228,7 +230,7 @@ B = (iteration < 128) ? 8'hFF : 255 - (iteration << 1);
 // G = (iteration < 128) ? iteration : (iteration > 192) ? 8'h80 + (iteration << 2 >> 2) + (iteration << 2 >> 3) : 8'h80;
 // B = (iteration < 128) ? 8'hFF : 255 - (iteration << 1);
 
-*/
+
 
 module ref_mandelbrotetron #(
     parameter FIXED_POINT_WIDTH = 16,
@@ -580,3 +582,5 @@ module ref_counter #(
     assign at_max = (count == max);
     
 endmodule
+
+*/

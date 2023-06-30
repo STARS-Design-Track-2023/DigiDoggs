@@ -1,8 +1,8 @@
 `default_nettype none
 
-`include "new_z.sv"
-`include "counter.sv"
-`include "gradient"
+// `include "new_z.sv"
+// `include "counter.sv"
+// `include "gradient"
 
 module mandelbrotetron #(
     parameter FIXED_POINT_WIDTH = 16,

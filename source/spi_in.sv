@@ -1,9 +1,9 @@
 `default_nettype none
 
-`include "sync.sv"
-`include "edge_detector.sv"
-`include "shift_register.sv"
-`include "counter.sv"
+// `include "sync.sv"
+// `include "edge_detector.sv"
+// `include "shift_register.sv"
+// `include "counter.sv"
 
 
 module spi_in #(

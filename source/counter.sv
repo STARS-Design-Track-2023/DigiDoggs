@@ -19,12 +19,12 @@ always_ff @(posedge clk, negedge nrst) begin
 end
 
 always_comb begin
-    casex ({clear, en, wrap})
-        3'b1xx: next_count = 0; // Clear condition
-        3'b00x: next_count = count; // Unenabled condition
+    casez ({clear, en, wrap})
+        3'b1??: next_count = 0; // Clear condition
+        3'b00?: next_count = count; // Unenabled condition
         3'b010: next_count = (count == max) ? count : count + 1; // Unwraped condition
         3'b011: next_count = (count == max) ? 0 : count + 1; // Wrapped condition
-        default: next_count = 4'bx; // "Oh shit something went wrong" condition
+        default: next_count = {N{1'bx}}; // "Oh shit something went wrong" condition
     endcase
 end
 
