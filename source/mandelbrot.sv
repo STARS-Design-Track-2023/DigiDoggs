@@ -68,7 +68,15 @@ end
 ///// NEW Z VALUE /////
 ///////////////////////
 
-new_z #(.FIXED_POINT_WIDTH(FIXED_POINT_WIDTH)) z_function (.z_real(z_real), .z_imaginary(z_imaginary), .c_real(c_real), .c_imaginary(c_imaginary), .new_z_real(computed_z_real), .new_z_imaginary(computed_z_imaginary));
+new_z #(.FIXED_POINT_WIDTH(FIXED_POINT_WIDTH)) z_function (
+    .z_real(z_real), 
+    .z_imaginary(z_imaginary), 
+    .c_real(c_real), 
+    .c_imaginary(c_imaginary), 
+    .new_z_real(computed_z_real), 
+    .new_z_imaginary(computed_z_imaginary),
+    .is_mandelbrot(is_mandelbrot)
+);
 
 ///////////////////////
 // ITERATION COUNTER //
@@ -80,8 +88,6 @@ counter #(.N($clog2(MAX_ITER))) iteration_counter (.clk(clk), .nrst(nrst), .clea
 /////////////////////////
 // MANDELBROT DETECTOR //
 /////////////////////////
-
-assign is_mandelbrot = ~(computed_z_real * computed_z_real + computed_z_imaginary * computed_z_imaginary >= 4);
 
 // Sees wether the 2^1 bit on either input is high (edit: two's compliment)
 /* assign is_mandelbrot = ~(computed_z_real[FIXED_POINT_WIDTH - 2] ^ computed_z_real[FIXED_POINT_WIDTH - 1] 

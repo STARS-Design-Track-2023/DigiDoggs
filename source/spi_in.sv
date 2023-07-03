@@ -34,25 +34,18 @@ syncronizer #(.DEPTH(2)) spi_clk_syncronizer (.clk(clk), .nrst(nrst), .async_in(
 posedge_detector spi_clk_posedge_detector (.clk(clk), .nrst(nrst), .signal(spi_clk_sync), .posedge_detected(spi_clk_edge));
 
 // SPI Enable Input
-syncronizer #(.DEPTH(3)) spi_en_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_en), .sync_out(spi_en_sync));
+syncronizer #(.DEPTH(2)) spi_en_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_en), .sync_out(spi_en_sync));
 syncronizer #(.DEPTH(2)) spi_en_edge_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_en), .sync_out(spi_en_edge_sync));
 posedge_detector spi_en_posedge_detector (.clk(clk), .nrst(nrst), .signal(spi_en_edge_sync), .posedge_detected(spi_en_edge));
 
 // SPI Data Input
-syncronizer #(.DEPTH(3)) spi_data_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_data), .sync_out(spi_data_sync));
+syncronizer #(.DEPTH(2)) spi_data_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_data), .sync_out(spi_data_sync));
 
 ////////////////////////////////
 // SHIFT REGISTER SHENANIGANS //
 ////////////////////////////////
 
-always_ff @(posedge clk, negedge nrst) begin
-    if (~nrst)
-        data_out <= 0;
-    else
-        data_out <= next_data_out; 
-end
-
-shift_reg #(.DEPTH(DATA_DEPTH * DATA_WIDTH)) spi_shift_reg (.clk(clk), .nrst(nrst), .en(spi_clk_edge), .q(spi_data_sync), .p_out(next_data_out));
+shift_reg #(.DEPTH(DATA_DEPTH * DATA_WIDTH)) spi_shift_reg (.clk(clk), .nrst(nrst), .en(spi_clk_edge), .q(spi_data_sync), .p_out(data_out));
 
 /////////////////////////////////////////
 // CRAZY COUNTER CARNIVAL (I AM SANE!) //

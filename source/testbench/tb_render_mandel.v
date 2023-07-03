@@ -112,7 +112,11 @@ module tb_top ();
     //     $display("SPI DATA SEND: %b", tb_spi_data);
     // end
 
-    ref_top DUT (
+    /////////
+    // DUT //
+    /////////
+
+    pushing_pixels DUT (
         .clk(tb_clk), .nrst(tb_nrst),
         .spi_clk(tb_spi_clk),
         .spi_en(tb_spi_en),
@@ -121,6 +125,10 @@ module tb_top ();
         .valid_out(tb_valid_out),
         .color(tb_RGB)
     );
+
+    //////////////
+    // CLOCKING //
+    //////////////
 
     initial begin
         tb_nrst = `RESET_ACTIVE;
