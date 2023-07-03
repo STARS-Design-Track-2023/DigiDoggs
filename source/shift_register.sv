@@ -1,28 +1,31 @@
-module shift_reg #(
-    parameter WIDTH = 24,
+`default_nettype none
+
+module shift_reg #( 
+    parameter DEPTH = 24,
     parameter ENTERS_AT_LSB = 1
 ) (
-    input logic clk, nrst, en, data_in_serial,
-    output logic [WIDTH-1:0] data_out_parallel
+    input logic clk, nrst, en, q,
+    output logic [DEPTH-1:0] p_out
 );
-
-logic [WIDTH-1:0] shift_reg;
-logic [WIDTH-1:0] next_shift_reg;
+    
+logic [DEPTH-1:0] next_p_out, p_shifted;
 
 always_ff @(posedge clk, negedge nrst) begin
-    if (!nrst)
-        data_out_parallel <= '0;
+    if (~nrst) 
+        p_out <= 0;
     else
-        data_out_parallel <= {data_out_parallel[WIDTH-2:0], data_in_serial};
+        p_out <= next_p_out;
 end
 
-assign shift_reg = en ? next_shift_reg : data_out_parallel;
+assign next_p_out = en ? p_shifted : p_out;
 
-always_comb begin
-    if (ENTERS_AT_LSB)
-        next_shift_reg = {data_out_parallel[WIDTH-2:0], data_in_serial};
-    else
-        next_shift_reg = {data_in_serial, data_out_parallel[WIDTH-1:1]};
-end
+generate
+    if (ENTERS_AT_LSB) begin
+        assign p_shifted = {p_out[DEPTH-2:0], q};
+    end
+    else begin
+        assign p_shifted = {q, p_out[DEPTH-1:1]};
+    end
+endgenerate
 
 endmodule

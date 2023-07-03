@@ -1,77 +1,64 @@
-`include "edge_detector.sv"
-`include "sync.sv"
-`include "shift_register.sv"
-`include "buffer_register.sv"
-`include "counter.sv"
+`default_nettype none
+
+// `include "sync.sv"
+// `include "edge_detector.sv"
+// `include "shift_register.sv"
+// `include "counter.sv"
 
 
 module spi_in #(
-    parameter DATA_WIDTH = 16,
-    parameter DATA_QUANTITY = 2
+    parameter DATA_WIDTH = 2,
+    parameter DATA_DEPTH = 16
 ) (
-    input logic clk, nrst, spi_clock, en,
-    input logic [DATA_QUANTITY - 1:0] data_in,   
-    output logic [DATA_WIDTH * DATA_QUANTITY - 1:0] data_out, 
-    output logic done_signal
+    input logic clk, nrst, spi_clk, spi_en, 
+    input logic spi_data, 
+    output logic valid_data, // Output of edge detector, valid for 1 clock cylce
+    output logic [DATA_WIDTH * DATA_DEPTH - 1:0] data_out // Valid when valid_data is high
 );
 
-// internal signals
-logic syncro_spi_clock;
-logic syncro_enable;
-logic syncro_enable_2;
-logic edge_spi_clock; 
-logic edge_spi_en;
-logic all_data_received;
-logic valid_data;
-logic [DATA_QUANTITY-1:0] sync_data;
-logic [DATA_QUANTITY * DATA_WIDTH - 1:0] next_data_out;
+logic [DATA_WIDTH * DATA_DEPTH - 1:0] next_data_out;
+logic spi_clk_sync;
+logic spi_clk_edge;
+logic spi_en_sync;
+logic spi_en_edge_sync;
+logic spi_en_edge;
+logic spi_data_sync;
+wire all_data_received;
 
+///////////////////////////////////////
+// SYNCRONIZATION AND EDGE DETECTION //
+///////////////////////////////////////
 
-////////////
-// SYNCRO //   
-////////////
+// SPI Clock Input  
+syncronizer #(.DEPTH(2)) spi_clk_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_clk), .sync_out(spi_clk_sync));
+posedge_detector spi_clk_posedge_detector (.clk(clk), .nrst(nrst), .signal(spi_clk_sync), .posedge_detected(spi_clk_edge));
 
-sync #(.WIDTH(2)) sync_clk (.clk(clk), .nrst(nrst), .signal(spi_clock), .syncro(syncro_spi_clock));
-sync #(.WIDTH(3), .QUANTITY(DATA_QUANTITY)) sync_mosi (.clk(clk), .nrst(nrst), .signal(data_in), .syncro(sync_data));
-sync #(.WIDTH(3)) sync_en (.clk(clk), .nrst(nrst), .signal(en), .syncro(syncro_enable));
-sync #(.WIDTH(2)) sync_en2 (.clk(clk), .nrst(nrst), .signal(en), .syncro(syncro_enable_2));
+// SPI Enable Input
+syncronizer #(.DEPTH(3)) spi_en_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_en), .sync_out(spi_en_sync));
+syncronizer #(.DEPTH(2)) spi_en_edge_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_en), .sync_out(spi_en_edge_sync));
+posedge_detector spi_en_posedge_detector (.clk(clk), .nrst(nrst), .signal(spi_en_edge_sync), .posedge_detected(spi_en_edge));
 
-///////////////////
-// EDGE DETECTOR //
-///////////////////
+// SPI Data Input
+syncronizer #(.DEPTH(3)) spi_data_syncronizer (.clk(clk), .nrst(nrst), .async_in(spi_data), .sync_out(spi_data_sync));
 
-edge_detector spi_clk(.clk(clk), .nrst(nrst), .signal(syncro_spi_clock), .posedge_detected(edge_spi_clock));
-edge_detector spi_en(.clk(clk), .nrst(nrst), .signal(syncro_enable_2), .posedge_detected(edge_spi_en)); 
-
-
-/////////////////////
-////// COUNTER //////
-/////////////////////
-
-counter #(.N($clog2(DATA_WIDTH))) spi_data_counter (.clk(clk), .nrst(nrst), .clear(edge_spi_en), .en(edge_spi_clock), .wrap(1'b0), .max(DATA_WIDTH[$clog2(DATA_WIDTH)-1:0]), .count(), .at_max(all_data_received));
-edge_detector edge_counter(.clk(clk), .nrst(nrst), .signal(all_data_received), .posedge_detected(valid_data));
-
-
-/////////////////////
-/// SHIFT REGISTER //
-/////////////////////
+////////////////////////////////
+// SHIFT REGISTER SHENANIGANS //
+////////////////////////////////
 
 always_ff @(posedge clk, negedge nrst) begin
-    if (!nrst)
+    if (~nrst)
         data_out <= 0;
     else
         data_out <= next_data_out; 
 end
 
-generate
-    for(genvar i = 0; i < DATA_QUANTITY; i = i + 1)begin
-        shift_reg #(.WIDTH(DATA_WIDTH)) data_shift (.clk(clk), .nrst(nrst), .en(edge_spi_clock), .data_in_serial(sync_data[i]), .data_out_parallel(next_data_out[DATA_WIDTH*(i+1)-1:DATA_WIDTH*i]));
-    end
-endgenerate
+shift_reg #(.DEPTH(DATA_DEPTH * DATA_WIDTH)) spi_shift_reg (.clk(clk), .nrst(nrst), .en(spi_clk_edge), .q(spi_data_sync), .p_out(next_data_out));
 
-endmodule 
+/////////////////////////////////////////
+// CRAZY COUNTER CARNIVAL (I AM SANE!) //
+/////////////////////////////////////////
 
+counter #(.N($clog2(DATA_DEPTH*DATA_WIDTH+1))) spi_data_counter (.clk(clk), .nrst(nrst), .clear(spi_en_edge),  .en(spi_clk_edge), .wrap(1'b0), .max(DATA_DEPTH*DATA_WIDTH), .count(), .at_max(all_data_received));
+posedge_detector data_valid_pulser (.clk(clk), .nrst(nrst), .signal(all_data_received), .posedge_detected(valid_data));
 
-
-
-
+endmodule

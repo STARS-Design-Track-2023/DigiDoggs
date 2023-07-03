@@ -1,22 +1,20 @@
-module edge_detector (
-    input logic clk, nrst,
+`default_nettype none
+
+module posedge_detector (
+    input logic clk, nrst, 
     input logic signal,
     output logic posedge_detected
 );
 
-  ///////////////////
-  // EDGE DETECTOR //
-  ///////////////////
+logic q;
 
-  logic signal_prev;
+always_ff @(posedge clk, negedge nrst) begin
+  if (~nrst)
+    q <= 0;
+  else
+    q <= signal;
+end
 
-  always_ff @(posedge clk, negedge nrst) begin
-    if (!nrst)
-      signal_prev <= 0;
-    else
-      signal_prev <= signal; 
-  end
-
-  assign posedge_detected = (signal && !signal_prev);  
+assign posedge_detected = ~q & signal;
 
 endmodule
