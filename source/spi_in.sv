@@ -5,7 +5,6 @@
 // `include "shift_register.sv"
 // `include "counter.sv"
 
-
 module spi_in #(
     parameter DATA_WIDTH = 2,
     parameter DATA_DEPTH = 16

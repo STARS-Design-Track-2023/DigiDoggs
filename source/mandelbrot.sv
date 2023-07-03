@@ -4,6 +4,8 @@
 // `include "counter.sv"
 // `include "gradient"
 
+`define SCALING_FACTOR (2.0 ** 28.0)
+
 module mandelbrotetron #(
     parameter FIXED_POINT_WIDTH = 16,
     parameter MAX_ITER = 256
@@ -77,6 +79,11 @@ new_z #(.FIXED_POINT_WIDTH(FIXED_POINT_WIDTH)) z_function (
     .new_z_imaginary(computed_z_imaginary),
     .is_mandelbrot(is_mandelbrot)
 );
+
+// always @(posedge start) begin
+//     $display("Recieved: %f %f", $itor(c_real_in) / `SCALING_FACTOR / 2, $itor(c_imaginary_in) / `SCALING_FACTOR / 2);
+//     $display("Recieved: %b %b", c_real_in, c_imaginary_in);
+// end
 
 ///////////////////////
 // ITERATION COUNTER //

@@ -1,6 +1,6 @@
 `default_nettype none
 `define SPI_MESSAGE_WIDTH 2
-`define SPI_MESSAGE_DEPTH 16
+`define SPI_MESSAGE_DEPTH 32
 `define MANDELBROT_MAX_ITERATIONS 255
 
 // `include "sync.sv"
