@@ -1,6 +1,6 @@
 `timescale 1ns/100ps
 `define CLOCK_PERIOD 100
-`define SPI_MASTER_CLOCK_PERIOD 350
+`define SPI_MASTER_CLOCK_PERIOD 250
 `define RESET_INACTIVE 1
 `define RESET_ACTIVE 0
 
@@ -8,10 +8,10 @@
 `define SPI_MESSAGE_DEPTH 32
 `define MANDELBROT_MAX_ITERATIONS 255
 
-`define SCALING_FACTOR (2.0 ** 29.0)
+`define SCALING_FACTOR (2.0 ** 28.0)
 
-`define IMG_WIDTH_PIXELS 256
-`define IMG_HEIGHT_PIXELS 256
+`define IMG_WIDTH_PIXELS 1024
+`define IMG_HEIGHT_PIXELS 1024
 
 
 module tb_top ();
@@ -21,10 +21,10 @@ module tb_top ();
     integer pixel_x;
     integer pixel_y;
 
-    real top_left_corner_x = -2;
-    real top_left_corner_y = -2;
-    real bottom_right_corner_x = 2;
-    real bottom_right_corner_y = 2;
+    real top_left_corner_x = -0.8347;
+    real top_left_corner_y = -0.2098;
+    real bottom_right_corner_x = -0.8266;
+    real bottom_right_corner_y = -0.2039;
     real fraction_x;
     real fraction_y;
     real coord_x;
@@ -60,29 +60,31 @@ module tb_top ();
         begin
             @(negedge tb_clk);
 
+            tb_spi_clk = 0;
             tb_spi_en = 1;
-            tb_spi_clk_active = 1;
+            #(`SPI_MASTER_CLOCK_PERIOD);
             
             tb_spi_packet = a;
-            tb_spi_data = tb_spi_packet[`SPI_MESSAGE_DEPTH - 1];
             for (i = 0; i < `SPI_MESSAGE_DEPTH; i = i + 1) begin
-                @(negedge tb_spi_clk);
-                tb_spi_packet = tb_spi_packet << 1;
+                tb_spi_clk = 0;
                 tb_spi_data = tb_spi_packet[`SPI_MESSAGE_DEPTH - 1];
-                #(0.1);
+                tb_spi_packet = tb_spi_packet << 1;
+                #(`SPI_MASTER_CLOCK_PERIOD / 2);
+                tb_spi_clk = 1;
+                #(`SPI_MASTER_CLOCK_PERIOD / 2);
             end
-            @(negedge tb_spi_clk)
             tb_spi_packet = b;
-            tb_spi_data = tb_spi_packet[`SPI_MESSAGE_DEPTH - 1];
             for (i = 0; i < `SPI_MESSAGE_DEPTH; i = i + 1) begin
-                @(negedge tb_spi_clk);
-                tb_spi_packet = tb_spi_packet << 1;
+                tb_spi_clk = 0;
                 tb_spi_data = tb_spi_packet[`SPI_MESSAGE_DEPTH - 1];
-                #(0.1);
+                tb_spi_packet = tb_spi_packet << 1;
+                #(`SPI_MASTER_CLOCK_PERIOD / 2);
+                tb_spi_clk = 1;
+                #(`SPI_MASTER_CLOCK_PERIOD / 2);
             end
 
             tb_spi_en = 0;
-            tb_spi_clk_active = 0;
+            tb_spi_clk = 0;
         end
     endtask
 
@@ -98,13 +100,6 @@ module tb_top ();
         #(`CLOCK_PERIOD / 2);
         tb_clk = 1'b1;
         #(`CLOCK_PERIOD / 2);
-    end
-
-    always begin
-        tb_spi_clk = 1'b0;
-        #(`SPI_MASTER_CLOCK_PERIOD / 2);
-        tb_spi_clk = tb_spi_clk_active;
-        #(`SPI_MASTER_CLOCK_PERIOD / 2);
     end
 
     // always begin
@@ -175,11 +170,11 @@ module tb_top ();
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00);
-        $fwrite(f, "%c", 8'h01);
+        $fwrite(f, "%c", 8'h04);
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00);
-        $fwrite(f, "%c", 8'h01); // 3/2
+        $fwrite(f, "%c", 8'h04); // 3/2
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h01);
@@ -192,7 +187,7 @@ module tb_top ();
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00);
-        $fwrite(f, "%c", 8'h03);
+        $fwrite(f, "%c", 8'h30);
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00);
         $fwrite(f, "%c", 8'h00); // 5/2
@@ -212,13 +207,13 @@ module tb_top ();
         $fwrite(f, "%c", 8'h00);
         
         $display("Writing colormap...");
-        for (pixel_y = 0; pixel_y < 256; pixel_y = pixel_y + 1) begin
+        for (pixel_y = 0; pixel_y < `IMG_HEIGHT_PIXELS; pixel_y = pixel_y + 1) begin
             if (pixel_y % 16 == 0) begin
                 $display("Computing Row %d...", pixel_y + 1);     
             end
-            for (pixel_x = 0; pixel_x < 256; pixel_x = pixel_x + 1) begin
-                fraction_x = $itor(pixel_x) / $itor(`IMG_WIDTH_PIXELS);
-                fraction_y = $itor(pixel_y) / $itor(`IMG_HEIGHT_PIXELS);
+            for (pixel_x = 0; pixel_x < `IMG_WIDTH_PIXELS; pixel_x = pixel_x + 1) begin
+                fraction_x = $itor(`IMG_WIDTH_PIXELS - pixel_x) / $itor(`IMG_WIDTH_PIXELS);
+                fraction_y = $itor(`IMG_HEIGHT_PIXELS - pixel_y) / $itor(`IMG_HEIGHT_PIXELS);
 
                 coord_x = fraction_x * (top_left_corner_x - bottom_right_corner_x) + bottom_right_corner_x;
                 coord_y = fraction_y * (top_left_corner_y - bottom_right_corner_y) + bottom_right_corner_y; 
@@ -228,10 +223,13 @@ module tb_top ();
                 //     $display("%b, %b", pixel_to_packet(coord_x), pixel_to_packet(coord_y));     
                 // end
 
+                // $display("Sending %f + %fi...", coord_x, coord_y);
+                // $display("Packets %b %b", pixel_to_packet(coord_x), pixel_to_packet(coord_y));
                 send_packet(pixel_to_packet(coord_x), pixel_to_packet(coord_y));
 
                 @(posedge tb_valid_out);
-                $fwrite(f, "%c%c%c", tb_B << 4, tb_G << 4, tb_R << 4);
+                // $fwrite(f, "%c%c%c", tb_B, tb_G, {8{tb_is_mandelbrot}});
+                $fwrite(f, "%c%c%c", tb_B, tb_G, tb_R);
                 #(`CLOCK_PERIOD * 3);
                 @(negedge tb_clk);
             end
@@ -322,9 +320,9 @@ module ref_color_converter(
             B = 8'b0;
         end
         else begin
-            R = iteration;
-            G = iteration;
-            B = iteration;
+            R = (iteration < 128) ? ~iteration : (iteration > 128) ? 8'h80 + (iteration << 1 >> 1) : 8'h80;
+            G = (iteration < 128) ? iteration : (iteration > 192) ? 8'h80 + (iteration << 2 >> 2) + (iteration << 2 >> 3) : 8'h80;
+            B = (iteration < 128) ? 8'hFF : 255 - (iteration << 1);
         end
     end
 
@@ -432,7 +430,8 @@ module ref_mandelbrotetron #(
         .c_real(c_real),
         .c_imaginary(c_imaginary),
         .new_z_real(computed_z_real),
-        .new_z_imaginary(computed_z_imaginary)
+        .new_z_imaginary(computed_z_imaginary),
+        .is_mandelbrot(is_mandelbrot)
     );
 
     ///////////////////////
@@ -458,10 +457,7 @@ module ref_mandelbrotetron #(
     /////////////////////////
 
     // Sees wether the 2^1 bit on either input is high (edit: two's compliment)
-    // assign is_mandelbrot = ~(computed_z_real >= 2 | computed_z_imaginary >= 2);
-    assign is_mandelbrot = ~(computed_z_real * computed_z_real + computed_z_imaginary * computed_z_imaginary >= 4);
-    // assign is_mandelbrot = ~(computed_z_real[FIXED_POINT_WIDTH - 2] ^ computed_z_real[FIXED_POINT_WIDTH - 1] 
-                                // | computed_z_imaginary[FIXED_POINT_WIDTH - 2] ^ computed_z_imaginary[FIXED_POINT_WIDTH - 1]);
+    // Now is part of new_z
 
     /////////////////////////////////////
     // Start and valid signal handling //
@@ -478,6 +474,36 @@ module ref_mandelbrotetron #(
 
     assign next_valid = stop && ~start;
 
+    //////////////
+    // DEBUGGER //
+    //////////////
+
+    // always @(posedge start) begin
+    //     $display("Recieved: %f %f", $itor(c_real_in) / `SCALING_FACTOR / 2, $itor(c_imaginary_in) / `SCALING_FACTOR / 2);
+    //     $display("Recieved: %b %b", c_real_in, c_imaginary_in);
+    // end
+
+    // real a, b, c, d;
+
+    // always @(negedge stop)
+    //     $display("START!");
+    
+    // always @(posedge stop)
+    //     $display("END!");
+
+    // always @(negedge clk) begin
+    //     if (~stop) begin
+    //         a = $itor(z_real) / `SCALING_FACTOR;
+    //         b = $itor(z_imaginary) / `SCALING_FACTOR;
+    //         c = $itor(c_real) / `SCALING_FACTOR;
+    //         d = $itor(c_imaginary) / `SCALING_FACTOR;
+    //         if (a > 2 || a < -2)
+    //             $display("%b", z_real);
+
+    //         $display("(%.4f + %.4fi)^2 + (%.4f + %.4fi)", a, b, c, d);
+    //     end
+    // end
+
 endmodule
 
 // This module may totally not work!
@@ -486,22 +512,49 @@ module ref_new_z #(
     parameter FIXED_POINT_WIDTH = 16 
 ) (
     input wire signed [FIXED_POINT_WIDTH-1:0] z_real, z_imaginary, c_real, c_imaginary,
-    output wire signed [FIXED_POINT_WIDTH-1:0] new_z_real, new_z_imaginary
+    output reg signed [FIXED_POINT_WIDTH-1:0] new_z_real, new_z_imaginary,
+    output reg is_mandelbrot
 );
-    wire signed [2*FIXED_POINT_WIDTH-1:0] z_real_squared, z_imaginary_squared;
-    // wire signed [FIXED_POINT_WIDTH-1:0] z_real_squared, z_imaginary_squared;
-    wire signed [2*FIXED_POINT_WIDTH-1:0] intermediate_real, intermediate_imaginary;
+    reg signed [2*FIXED_POINT_WIDTH-1:0] z_a, z_b, c_a, c_b;
+    reg signed [2*FIXED_POINT_WIDTH-1:0] z_a2_untruncated, z_b2_untruncated;
+    reg signed [2*FIXED_POINT_WIDTH-1:0] z_real_squared, z_imag_squared, zab;
+    reg signed [2*FIXED_POINT_WIDTH-1:0] intermediate_real, intermediate_imag;
+    reg signed [FIXED_POINT_WIDTH:0] square_sum;
     
-    assign z_real_squared = ((z_real * z_real) << 3) >> FIXED_POINT_WIDTH;
-    // assign z_real_squared = ((z_real * z_real) << 3) >> FIXED_POINT_WIDTH;
-    assign z_imaginary_squared = ((z_imaginary * z_imaginary) << 3) >> FIXED_POINT_WIDTH;
+    // z_a = {{FIXED_POINT_WIDTH{z_real[FIXED_POINT_WIDTH-1]}}, z_real};
+    // z_b = {{FIXED_POINT_WIDTH{z_imaginary[FIXED_POINT_WIDTH-1]}}, z_imaginary};
+    // c_a = {{FIXED_POINT_WIDTH{c_real[FIXED_POINT_WIDTH-1]}}, c_real};
+    // c_b = {{FIXED_POINT_WIDTH{c_imaginary[FIXED_POINT_WIDTH-1]}}, c_imaginary};
 
-    assign intermediate_real = (z_real_squared - z_imaginary_squared);
-    assign intermediate_imaginary = ((2 * z_real * z_imaginary) << 3) >> (FIXED_POINT_WIDTH + 1);
+    always @(z_real, z_imaginary, c_real, c_imaginary) begin
+        z_a = {{FIXED_POINT_WIDTH{z_real[FIXED_POINT_WIDTH-1]}}, z_real};
+        z_b = {{FIXED_POINT_WIDTH{z_imaginary[FIXED_POINT_WIDTH-1]}}, z_imaginary};
+        c_a = {{FIXED_POINT_WIDTH{c_real[FIXED_POINT_WIDTH-1]}}, c_real};
+        c_b = {{FIXED_POINT_WIDTH{c_imaginary[FIXED_POINT_WIDTH-1]}}, c_imaginary};
 
-    assign new_z_real = intermediate_real + c_real;
-    assign new_z_imaginary = intermediate_imaginary + c_imaginary;
+        z_a2_untruncated = z_a * z_a;
+        z_real_squared = z_a2_untruncated >>> (FIXED_POINT_WIDTH - 4);
+        // $display("%f : %f : %f, %b", $itor(z_real) / `SCALING_FACTOR, $itor(z_a) / `SCALING_FACTOR, $itor(z_real_squared) / `SCALING_FACTOR / 2, z_a2_untruncated);
+        z_b2_untruncated = z_b * z_b;
+        z_imag_squared = z_b2_untruncated >>> (FIXED_POINT_WIDTH - 4);
+        intermediate_real = z_real_squared - z_imag_squared; 
+
+        zab = z_a * z_b;
+        intermediate_imag = zab >>> (FIXED_POINT_WIDTH - 4) <<< 1;
+
+        new_z_real = intermediate_real[FIXED_POINT_WIDTH-1:0] + c_a;
+        new_z_imaginary = intermediate_imag[FIXED_POINT_WIDTH-1:0] + c_b;
+
+        square_sum = z_real_squared + z_imag_squared;
+        // $display("Square sum: %f", $itor(square_sum) / `SCALING_FACTOR);
+        is_mandelbrot = square_sum >>> (FIXED_POINT_WIDTH - 4) < 4 && !z_real_squared[FIXED_POINT_WIDTH-1] && !z_imag_squared[FIXED_POINT_WIDTH-1];
+    end
+
 endmodule
+
+                            ////////////////
+                            // SPI MODULE //
+                            ////////////////
 
 module ref_spi #(
     parameter DATA_WIDTH = 2,
@@ -509,8 +562,8 @@ module ref_spi #(
 ) (
     input wire clk, nrst, spi_clk, spi_en, 
     input wire spi_data, 
-    output wire valid_data, // Output of edge detector, valid for 1 clock cylce
-    output reg [DATA_WIDTH * DATA_DEPTH - 1:0] data_out // Valid when valid_data is high
+    output reg valid_data, // Output of edge detector, valid for 1 clock cylce
+    output wire [DATA_WIDTH * DATA_DEPTH - 1:0] data_out // Valid when valid_data is high
 );
     ///////////////////////////////////////
     // SYNCRONIZATION AND EDGE DETECTION //
@@ -537,7 +590,7 @@ module ref_spi #(
     );
 
     // SPI Enable Input
-    ref_syncronizer #(.DEPTH(3)) spi_en_syncronizer (
+    ref_syncronizer #(.DEPTH(2)) spi_en_syncronizer (
         .clk(clk), .nrst(nrst),
         .async_in(spi_en),
         .sync_out(spi_en_sync)
@@ -556,7 +609,7 @@ module ref_spi #(
     );
 
     // SPI Data Input
-    ref_syncronizer #(.DEPTH(3)) 
+    ref_syncronizer #(.DEPTH(2)) 
     spi_data_syncronizer (
         .clk(clk), .nrst(nrst),
         .async_in(spi_data),
@@ -567,27 +620,27 @@ module ref_spi #(
     // SHIFT REGISTER SHENANIGANS //
     ////////////////////////////////
 
-    wire [DATA_WIDTH * DATA_DEPTH - 1:0] next_data_out;
+    // wire [DATA_WIDTH * DATA_DEPTH - 1:0] next_data_out;
 
-    always @(posedge clk, negedge nrst) begin
-        if (~nrst)
-            data_out <= 0;
-        else
-            data_out <= next_data_out; 
-    end
+    // always @(posedge clk, negedge nrst) begin
+    //     if (~nrst)
+    //         data_out <= 0;
+    //     else
+    //         data_out <= next_data_out; 
+    // end
 
     ref_shift_reg #(.DEPTH(DATA_DEPTH * DATA_WIDTH)) spi_shift_reg (
         .clk(clk), .nrst(nrst),
         .en(spi_clk_edge),
         .q(spi_data_sync),
-        .p_out(next_data_out)
+        .p_out(data_out)
     );
 
     /////////////////////////////////////////
     // CRAZY COUNTER CARNIVAL (I AM SANE!) //
     /////////////////////////////////////////
 
-    wire all_data_received;
+    wire all_data_received, next_valid_data;
 
     ref_counter #(.N($clog2(DATA_DEPTH*DATA_WIDTH+1))) spi_data_counter (
         .clk(clk), .nrst(nrst),
@@ -599,11 +652,31 @@ module ref_spi #(
         .at_max(all_data_received)
     );
 
+    // wire [8:0] spi_bits;
+    // always @(spi_bits) begin
+    //     $display("SPI: %d", spi_bits);
+    // end
+
+    // always @(posedge all_data_received) begin
+    //     $display("SPI DATA RECIEVED");
+    //     // $display("Packets %b", data_out);
+    //     // @(posedge clk);
+    //     // @(negedge clk);
+    //     // $display("Packets %b", data_out);
+    // end
+
     ref_posedge_detector data_valid_pulser (
         .clk(clk), .nrst(nrst),
         .signal(all_data_received),
-        .posedge_detected(valid_data)
+        .posedge_detected(next_valid_data)
     );
+
+    always @(posedge clk, negedge nrst) begin
+        if (~nrst)
+            valid_data <= 0;
+        else
+            valid_data <= next_valid_data;
+    end
     
 endmodule
 
