@@ -21,10 +21,10 @@ module tb_top ();
     integer pixel_x;
     integer pixel_y;
 
-    real top_left_corner_x = -0.8347;
-    real top_left_corner_y = -0.2098;
-    real bottom_right_corner_x = -0.8266;
-    real bottom_right_corner_y = -0.2039;
+    real top_left_corner_x = -2; // -0.830541756;
+    real top_left_corner_y = -1; // -0.207202618;
+    real bottom_right_corner_x = 1; // -0.830486446;
+    real bottom_right_corner_y = 1; //-0.20716154;
     real fraction_x;
     real fraction_y;
     real coord_x;
@@ -315,14 +315,14 @@ module ref_color_converter(
 
     always @(*) begin 
         if (ismandelbrot) begin
-            R = 8'b0;
-            G = 8'b0;
-            B = 8'b0;
+            R = 0;
+            G = 0;
+            B = 0;
         end
         else begin
-            R = (iteration < 128) ? ~iteration : (iteration > 128) ? 8'h80 + (iteration << 1 >> 1) : 8'h80;
-            G = (iteration < 128) ? iteration : (iteration > 192) ? 8'h80 + (iteration << 2 >> 2) + (iteration << 2 >> 3) : 8'h80;
-            B = (iteration < 128) ? 8'hFF : 255 - (iteration << 1);
+            R = iteration;
+            G = iteration;
+            B = iteration;
         end
     end
 
