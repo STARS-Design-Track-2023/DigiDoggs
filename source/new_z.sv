@@ -12,6 +12,8 @@ module new_z #(
     reg signed [2*FIXED_POINT_WIDTH-1:0] z_real_squared, z_imag_squared, zab;
     reg signed [2*FIXED_POINT_WIDTH-1:0] intermediate_real, intermediate_imag;
     reg signed [FIXED_POINT_WIDTH:0] square_sum;
+
+    reg signed [FIXED_POINT_WIDTH-1:0] trash;
     
     // z_a = {{FIXED_POINT_WIDTH{z_real[FIXED_POINT_WIDTH-1]}}, z_real};
     // z_b = {{FIXED_POINT_WIDTH{z_imaginary[FIXED_POINT_WIDTH-1]}}, z_imaginary};
@@ -34,10 +36,10 @@ module new_z #(
         zab = z_a * z_b;
         intermediate_imag = zab >>> (FIXED_POINT_WIDTH - 4) <<< 1;
 
-        new_z_real = intermediate_real[FIXED_POINT_WIDTH-1:0] + c_a;
-        new_z_imaginary = intermediate_imag[FIXED_POINT_WIDTH-1:0] + c_b;
+        {trash, new_z_real} = {{FIXED_POINT_WIDTH{1'b0}}, intermediate_real[FIXED_POINT_WIDTH-1:0]} + c_a;
+        {trash, new_z_imaginary} = {{FIXED_POINT_WIDTH{1'b0}},intermediate_imag[FIXED_POINT_WIDTH-1:0]} + c_b;
 
-        square_sum = z_real_squared + z_imag_squared;
+        {trash, square_sum} = z_real_squared + z_imag_squared;
         // $display("Square sum: %f", $itor(square_sum) / `SCALING_FACTOR);
         is_mandelbrot = square_sum >>> (FIXED_POINT_WIDTH - 4) < 4 && !z_real_squared[FIXED_POINT_WIDTH-1] && !z_imag_squared[FIXED_POINT_WIDTH-1];
     end

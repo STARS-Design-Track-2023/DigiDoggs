@@ -10,9 +10,9 @@ logic [7:0] R, G, B;
 
 always_comb begin 
     if (ismandelbrot) begin
-        R = 8'b1;
-        G = 8'b1;
-        B = 8'b1;
+        R = 8'b0;
+        G = 8'b0;
+        B = 8'b0;
     end
     else begin
         R = iteration;

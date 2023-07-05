@@ -89,10 +89,10 @@ module tb_top ();
     endtask
 
 
-    initial begin
-        $dumpfile ("dump.vcd");
-        $dumpvars;
-    end
+    // initial begin
+    //     $dumpfile ("dump.vcd");
+    //     $dumpvars;
+    // end
 
     
     always begin
@@ -143,9 +143,6 @@ module tb_top ();
         // -0 + 0i
         $display("Test packet 1...");
         send_packet(pixel_to_packet(-0.0), pixel_to_packet(0));
-
-        #(`CLOCK_PERIOD * 100);
-        $finish;
 
         @(posedge tb_valid_out);
         #(`CLOCK_PERIOD * 5);
