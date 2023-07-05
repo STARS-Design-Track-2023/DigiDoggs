@@ -18,7 +18,17 @@ module top
   input  logic txready, rxready
 );
 
-pushing_pixels FPGA_call(.cs(0), .clk(hwclk), .nrst(~pb[1]), .spi_clk(pb[5]), .spi_en(pb[4]), .spi_data(pb[6]), .valid_out(blue), .is_mandelbrot(green), .color({ss0[7:0], ss1[7:0], ss2[7:0]}));
+  pushing_pixels FPGA_call(
+    .cs(0), 
+    .clk(hwclk), 
+    .nrst(~pb[1]), 
+    .spi_clk(pb[5]), 
+    .spi_en(pb[4]), 
+    .spi_data(pb[6]), 
+    .valid_out(blue), 
+    .is_mandelbrot(green), 
+    .color({ss0[7:0], ss1[7:0], ss2[7:0]})
+  );
 
 endmodule
 

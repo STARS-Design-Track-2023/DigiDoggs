@@ -1,0 +1,80 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Wed Jul  5 20:58:05 2023
+[*]
+[dumpfile] "/home/shay/c/ecng062/Documents/STARS/DigiDoggs/dump.vcd"
+[dumpfile_mtime] "Wed Jul  5 20:49:37 2023"
+[dumpfile_size] 6909916
+[savefile] "/home/shay/c/ecng062/Documents/STARS/DigiDoggs/tb_mapped.gtkw"
+[timestart] 0
+[size] 1846 1016
+[pos] -1 -1
+*-19.931046 1154000 1550000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_top.
+[treeopen] tb_top.DUT.
+[treeopen] tb_top.DUT.input_spi.
+[sst_width] 233
+[signals_width] 182
+[sst_expanded] 1
+[sst_vpaned_height] 289
+@28
+tb_top.tb_clk
+tb_top.tb_spi_clk
+@22
+tb_top.tb_spi_packet[32:0]
+@28
+tb_top.tb_spi_en
+tb_top.tb_valid_out
+tb_top.DUT.input_spi.spi_clk_edge
+tb_top.DUT.input_spi.all_data_received
+@800022
+tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+@28
+(0)tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+(1)tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+(2)tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+(3)tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+(4)tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+(5)tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+(6)tb_top.DUT.input_spi.spi_data_counter.count[6:0]
+@1001200
+-group_end
+@c00022
+tb_top.DUT.input_spi.spi_data_counter.max[6:0]
+@28
+(0)tb_top.DUT.input_spi.spi_data_counter.max[6:0]
+(1)tb_top.DUT.input_spi.spi_data_counter.max[6:0]
+(2)tb_top.DUT.input_spi.spi_data_counter.max[6:0]
+(3)tb_top.DUT.input_spi.spi_data_counter.max[6:0]
+(4)tb_top.DUT.input_spi.spi_data_counter.max[6:0]
+(5)tb_top.DUT.input_spi.spi_data_counter.max[6:0]
+(6)tb_top.DUT.input_spi.spi_data_counter.max[6:0]
+@1401200
+-group_end
+@28
+tb_top.DUT.input_spi.spi_data_counter.at_max
+tb_top.DUT.input_spi.spi_data_counter.clear
+tb_top.DUT.input_spi.spi_data_counter.en
+tb_top.DUT.input_spi.spi_data_counter.nrst
+tb_top.DUT.input_spi.spi_data_counter.wrap
+@201
+-~~INPUTS~~
+@28
+tb_top.DUT.input_spi.all_data_received
+tb_top.DUT.input_spi.clk
+@22
+tb_top.DUT.input_spi.data_out[63:0]
+@28
+tb_top.DUT.input_spi.next_valid_data
+tb_top.DUT.input_spi.nrst
+tb_top.DUT.input_spi.spi_clk
+tb_top.DUT.input_spi.spi_clk_edge
+tb_top.DUT.input_spi.spi_clk_sync
+tb_top.DUT.input_spi.spi_data
+tb_top.DUT.input_spi.spi_data_sync
+tb_top.DUT.input_spi.spi_en
+tb_top.DUT.input_spi.spi_en_edge
+tb_top.DUT.input_spi.spi_en_edge_sync
+tb_top.DUT.input_spi.valid_data
+[pattern_trace] 1
+[pattern_trace] 0
