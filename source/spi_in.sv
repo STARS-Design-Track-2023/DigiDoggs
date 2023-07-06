@@ -9,6 +9,12 @@ module spi_in #(
     output reg valid_data, // Output of edge detector, valid for 1 clock cylce
     output wire [DATA_WIDTH * DATA_DEPTH - 1:0] data_out // Valid when valid_data is high
 );
+
+    wire [$clog2($clog2(DATA_DEPTH*DATA_WIDTH+1)):0] NUM_BITS;
+    generate
+        assign NUM_BITS = DATA_WIDTH * DATA_DEPTH;
+    endgenerate
+
     ///////////////////////////////////////
     // SYNCRONIZATION AND EDGE DETECTION //
     ///////////////////////////////////////
@@ -91,7 +97,7 @@ module spi_in #(
         .clear(spi_en_edge), 
         .en(spi_clk_edge),
         .wrap(1'b0),
-        .max(DATA_DEPTH*DATA_WIDTH),
+        .max(NUM_BITS),
         .count(),
         .at_max(all_data_received)
     );
